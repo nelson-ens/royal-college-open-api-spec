@@ -22,10 +22,8 @@ paths:
             application/json:
               schema: # Must-have
                 $ref: "#/components/schemas/OptionSetModel"
-      security:
-        - ApiKeyAuth: []
       tags:
-        - "Public (Cache Enabled)"
+        - "RefData"
   /contact/{rcId}:
     parameters:
       - in: path
@@ -46,7 +44,7 @@ paths:
       security:
         - ApiKeyAuth: []
       tags:
-        - Contact (Protected)
+        - Contact
     put:
       description: Updates COA
       requestBody:
@@ -62,7 +60,7 @@ paths:
       security:
         - ApiKeyAuth: []
       tags:
-        - Contact (Protected)
+        - Contact
   /contact:
     post:
       description: Create a new contact
@@ -79,7 +77,7 @@ paths:
       security:
         - ApiKeyAuth: []
       tags:
-        - Contact (Protected)
+        - Contact
   /contact/{rcId}/invoices:
     parameters:
       - in: path
@@ -107,7 +105,7 @@ paths:
       security:
         - ApiKeyAuth: []
       tags:
-        - Invoice (Protected)
+        - Invoice
   /contact/{rcId}/receipts:
     parameters:
       - in: path
@@ -134,7 +132,7 @@ paths:
       security:
         - ApiKeyAuth: []
       tags:
-        - Receipt (Protected)
+        - Receipt
   /contact/{rcId}/invoices/{id}:
     parameters:
       - in: path
@@ -162,7 +160,7 @@ paths:
       security:
         - ApiKeyAuth: []
       tags:
-        - Invoice (Protected)
+        - Invoice
   /contact/{rcId}/receipts/{id}:
     parameters:
       - in: path
@@ -189,7 +187,7 @@ paths:
       security:
         - ApiKeyAuth: []
       tags:
-        - Receipt (Protected)
+        - Receipt
   /contact/{rcId}/fr:
     parameters:
       - in: path
@@ -213,7 +211,7 @@ paths:
       security:
         - ApiKeyAuth: []
       tags:
-        - Fee Reduction (Protected)
+        - Fee Reduction
 components:
   securitySchemes:
     ApiKeyAuth: # arbitrary name for the security scheme
@@ -371,4 +369,3 @@ components:
           type: string
         metadata:
           type: object
-          
