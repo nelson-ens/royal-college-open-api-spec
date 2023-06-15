@@ -1,6 +1,6 @@
 openapi: "3.0.2"
 info:
-  title: Royal College Forms API
+  title: Royal College Forms APIaa
   version: "1.0"
 servers:
   - url: https://api.server.test/v1/api
@@ -12,7 +12,7 @@ paths:
         required: true
         schema:
           type: string
-        description: Reference Type, such as stateprov, countries, disciplines, etc
+        description: Reference Type, such as prefix, pronouns, stateprov, countries, disciplines, category, etc
     get:
       description: Retrieves reference data from DV
       responses:
@@ -25,7 +25,7 @@ paths:
       security:
         - ApiKeyAuth: []
       tags:
-        - "Public"
+        - "Public (Cache Enabled)"
   /contact/{rcId}:
     parameters:
       - in: path
@@ -46,7 +46,7 @@ paths:
       security:
         - ApiKeyAuth: []
       tags:
-        - "Protected"
+        - Contact (Protected)
     put:
       description: Updates COA
       requestBody:
@@ -62,10 +62,10 @@ paths:
       security:
         - ApiKeyAuth: []
       tags:
-        - "Protected"
+        - Contact (Protected)
   /contact:
     post:
-      description: Create new ESR
+      description: Create a new contact
       requestBody:
         description: Optional description in *Markdown*
         required: true
@@ -79,15 +79,22 @@ paths:
       security:
         - ApiKeyAuth: []
       tags:
-        - "Protected"
-  /forms/ipr/{id}:
+        - Contact (Protected)
+  /contact/{rcId}/invoices:
     parameters:
       - in: path
-        name: id
+        name: rcId
         required: true
         schema:
           type: string
-        description: The RC ID
+        description: RC ID
+      - in: query
+        name: id
+        required: false
+        schema:
+          type: string
+        description: The invoice id
+
     get:
       description: Retrieves data to populate IPR form
       responses:
@@ -96,28 +103,101 @@ paths:
           content: # Response body
             application/json:
               schema: # Must-have
-                $ref: "#/components/schemas/IprModel"
+                $ref: "#/components/schemas/InvoicesModel"
       security:
         - ApiKeyAuth: []
       tags:
-        - "Protected"
-    put:
-      description: Updates COA
-      requestBody:
-        description: Optional description in *Markdown*
+        - Invoice (Protected)
+  /contact/{rcId}/receipts:
+    parameters:
+      - in: path
+        name: rcId
         required: true
-        content:
-          text/plain:
-            schema:
-              type: string
+        schema:
+          type: string
+        description: RC ID
+      - in: query
+        name: id
+        required: false
+        schema:
+          type: string
+        description: The receipt id
+    get:
+      description: Retrieves data to populate IPR form
       responses:
         "200":
           description: OK
+          content: # Response body
+            application/json:
+              schema: # Must-have
+                $ref: "#/components/schemas/ReceiptsModel"
       security:
         - ApiKeyAuth: []
       tags:
-        - "Protected"
-  /forms/fr:
+        - Receipt (Protected)
+  /contact/{rcId}/invoices/{id}:
+    parameters:
+      - in: path
+        name: rcId
+        required: true
+        schema:
+          type: string
+        description: RC ID
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: The invoice id
+
+    get:
+      description: Retrieves data to populate IPR form
+      responses:
+        "200":
+          description: OK
+          content: # Response body
+            application/json:
+              schema: # Must-have
+                $ref: "#/components/schemas/InvoiceObj"
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Invoice (Protected)
+  /contact/{rcId}/receipts/{id}:
+    parameters:
+      - in: path
+        name: rcId
+        required: true
+        schema:
+          type: string
+        description: RC ID
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: The receipt id
+    get:
+      description: Retrieves data to populate IPR form
+      responses:
+        "200":
+          description: OK
+          content: # Response body
+            application/json:
+              schema: # Must-have
+                $ref: "#/components/schemas/ReceiptObj"
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Receipt (Protected)
+  /contact/{rcId}/fr:
+    parameters:
+      - in: path
+        name: rcId
+        required: true
+        schema:
+          type: string
+        description: RC ID
     post:
       description: Updates COA
       requestBody:
@@ -133,7 +213,7 @@ paths:
       security:
         - ApiKeyAuth: []
       tags:
-        - "Protected"
+        - Fee Reduction (Protected)
 components:
   securitySchemes:
     ApiKeyAuth: # arbitrary name for the security scheme
@@ -184,7 +264,20 @@ components:
             $ref: '#/components/schemas/PhoneObj'
         lastUpdatedBy:
           type: string
-    IprModel:
+    InvoicesModel:
+      type: array
+      items:
+        $ref: '#/components/schemas/InvoiceObj'
+    InvoiceObj:
+      type: object
+      properties:
+        id:
+          type: string
+    ReceiptsModel:
+      type: array
+      items:
+        $ref: '#/components/schemas/ReceiptObj'
+    ReceiptObj:
       type: object
       properties:
         id:
@@ -192,8 +285,31 @@ components:
     FrModel:
       type: object
       properties:
-        id:
+        type:
           type: string
+          enum: [op1, op2, op3]
+        declType:
+          type: string
+          enum: [income, ftPostGrad, tempLeave]
+        income:
+          type: string
+          enum: [gt35k, lt35k]
+        workType:
+          type: string
+          enum: [ftWork, ptWork, ptPostGrad]
+        progInfo:
+          type: string
+          enum: [inCanada, outsideCanada]
+        ftPostGrad:
+          type: boolean
+        programName:
+          type: string
+        university:
+          type: string
+        hospital:
+          type: string
+        tempLeave:
+          type: boolean
     AddressObj:
       type: object
       properties:
@@ -253,3 +369,6 @@ components:
           type: string
         value:
           type: string
+        metadata:
+          type: object
+          
