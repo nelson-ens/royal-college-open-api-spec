@@ -1,0 +1,255 @@
+openapi: "3.0.2"
+info:
+  title: Royal College Forms API
+  version: "1.0"
+servers:
+  - url: https://api.server.test/v1/api
+paths:
+  /ref/{refType}:
+    parameters:
+      - in: path
+        name: refType
+        required: true
+        schema:
+          type: string
+        description: Reference Type, such as stateprov, countries, disciplines, etc
+    get:
+      description: Retrieves reference data from DV
+      responses:
+        "200":
+          description: OK
+          content: # Response body
+            application/json:
+              schema: # Must-have
+                $ref: "#/components/schemas/OptionSetModel"
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - "Public"
+  /contact/{rcId}:
+    parameters:
+      - in: path
+        name: rcId
+        required: true
+        schema:
+          type: string
+        description: RC ID
+    get:
+      description: Retrieves data to populate COA form
+      responses:
+        "200":
+          description: OK
+          content: # Response body
+            application/json:
+              schema: # Must-have
+                $ref: "#/components/schemas/ContactModel"
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - "Protected"
+    put:
+      description: Updates COA
+      requestBody:
+        description: Optional description in *Markdown*
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactModel'
+      responses:
+        "200":
+          description: OK
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - "Protected"
+  /contact:
+    post:
+      description: Create new ESR
+      requestBody:
+        description: Optional description in *Markdown*
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactModel'
+      responses:
+        "200":
+          description: OK
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - "Protected"
+  /forms/ipr/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        description: The RC ID
+    get:
+      description: Retrieves data to populate IPR form
+      responses:
+        "200":
+          description: OK
+          content: # Response body
+            application/json:
+              schema: # Must-have
+                $ref: "#/components/schemas/IprModel"
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - "Protected"
+    put:
+      description: Updates COA
+      requestBody:
+        description: Optional description in *Markdown*
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        "200":
+          description: OK
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - "Protected"
+  /forms/fr:
+    post:
+      description: Updates COA
+      requestBody:
+        description: Optional description in *Markdown*
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FrModel'
+      responses:
+        "200":
+          description: OK
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - "Protected"
+components:
+  securitySchemes:
+    ApiKeyAuth: # arbitrary name for the security scheme
+      type: apiKey
+      in: header # can be "header", "query" or "cookie"
+      name: x-api-key # name of the header, query parameter or cookie
+  schemas:
+    ContactModel:
+      type: object
+      properties:
+        rcId:
+          type: string
+        prefix:
+          type: string
+        pronoun:
+          type: object
+          properties:
+            en:
+              type: string
+            fr:
+              type: string
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        preferredName:
+          type: string
+        dob:
+          type: string
+        mdInfo:
+          $ref: '#/components/schemas/MdInfoObj'
+        address:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddressObj'
+        email:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmailObj'
+        languageCorrespondance:
+          type: string
+          enum: [en, fr]
+        phone:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhoneObj'
+        lastUpdatedBy:
+          type: string
+    IprModel:
+      type: object
+      properties:
+        id:
+          type: string
+    FrModel:
+      type: object
+      properties:
+        id:
+          type: string
+    AddressObj:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [home, business]
+        line1:
+          type: string
+        line2:
+          type: string
+        line3:
+          type: string
+        line4:
+          type: string
+        city:
+          type: string
+        stateProv:
+          type: string
+        country:
+          type: string
+        postCodeZip:
+          type: string
+    EmailObj:
+      type: string
+    PhoneObj:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [phone, mobile, fax]
+        usage:
+          type: string
+          enum: [home, business]
+        countryCode:
+          type: string
+        number:
+          type: string
+        ext:
+          type: string
+    MdInfoObj:
+      type: object
+      properties:
+        country:
+          type: string
+        university:
+          type: string
+        yearObtained:
+          type: number
+        type:
+          type: string
+        minc:
+          type: string
+    OptionSetModel:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
